@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fril Stream</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-animation"></div>  <div class="offline" id="offlineNotice">You're offline. <button onclick="location.reload()">Try Again</button></div>  <div class="login-screen" id="loginScreen">
+    <h1>🎷 Fril Stream</h1>
+    <input type="email" placeholder="Enter email" id="emailInput">
+    <button onclick="login()">Login</button>
+  </div>  <div class="app" id="appScreen" style="display: none;">
+    <header>
+      <h2>Welcome to Fril Stream 🎶</h2>
+      <input type="text" id="postInput" placeholder="Paste YouTube or Spotify URL...">
+      <button onclick="postSong()">Post</button>
+    </header><div class="artist-buttons">
+  <button onclick="loadMusic('Juice WRLD')">Juice WRLD</button>
+  <button onclick="loadMusic('XXXTENTACION')">X</button>
+  <button onclick="loadMusic('2Pac')">2Pac</button>
+  <button onclick="loadMusic('Trippie Redd')">Trippie</button>
+  <button onclick="loadMusic('King Von')">Von</button>
+  <button onclick="loadMusic('Lil Peep')">Peep</button>
+  <button onclick="loadMusic('DMX')">DMX</button>
+  <button onclick="loadMusic('Lil Loaded')">Loaded</button>
+</div>
+
+<div class="player" id="musicPlayer">
+  <iframe id="embedFrame" src="" frameborder="0" allowfullscreen></iframe>
+</div>
+
+  </div>  <script>
+    const appScreen = document.getElementById("appScreen");
+    const loginScreen = document.getElementById("loginScreen");
+    const embedFrame = document.getElementById("embedFrame");
+    const offlineNotice = document.getElementById("offlineNotice");
+
+    function login() {
+      const email = document.getElementById("emailInput").value;
+      if (email.includes("@")) {
+        loginScreen.style.display = "none";
+        appScreen.style.display = "block";
+      } else {
+        alert("Please enter a valid email.");
+      }
+    }
+
+    function loadMusic(query) {
+      const url = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query + " full songs")}&autoplay=1&controls=0`;
+      embedFrame.src = url;
+    }
+
+    function postSong() {
+      const input = document.getElementById("postInput").value.trim();
+      if (input.includes("youtube.com") || input.includes("youtu.be")) {
+        const videoId = extractYouTubeID(input);
+        if (videoId) {
+          embedFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0`;
+        }
+      } else if (input.includes("spotify.com")) {
+        embedFrame.src = input.replace("track", "embed/track");
+      } else {
+        alert("Invalid link. Please post a YouTube or Spotify link.");
+      }
+      document.getElementById("postInput").value = "";
+    }
+
+    function extractYouTubeID(url) {
+      const regExp = /(?:\?v=|\/embed\/|\.be\/)([^&]+)/;
+      const match = url.match(regExp);
+      return match ? match[1] : null;
+    }
+
+    function checkOffline() {
+      if (!navigator.onLine) {
+        offlineNotice.style.display = "block";
+      } else {
+        offlineNotice.style.display = "none";
+      }
+    }
+
+    window.addEventListener("online", checkOffline);
+    window.addEventListener("offline", checkOffline);
+    checkOffline();
+  </script></body>
+</html>
